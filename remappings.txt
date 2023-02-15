@@ -1,0 +1,6 @@
+ds-test/test.sol=lib/forge-std/src/Test.sol
+forge-std/=lib/forge-std/src/
+@mcag/=src/mcag-contracts/
+@kuma/=src/kuma-protocol/
+@openzeppelin/=lib/openzeppelin-contracts/
+@openzeppelin-upgradeable/=lib/openzeppelin-contracts-upgradeable/
