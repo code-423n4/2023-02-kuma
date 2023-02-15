@@ -2,17 +2,16 @@
 
 This `README.md` contains a set of checklists for our contest collaboration.
 
-Your contest will use two repos: 
+Your contest will use two repos:
+
 - **a _contest_ repo** (this one), which is used for scoping your contest and for providing information to contestants (wardens)
-- **a _findings_ repo**, where issues are submitted (shared with you after the contest) 
+- **a _findings_ repo**, where issues are submitted (shared with you after the contest)
 
 Ultimately, when we launch the contest, this contest repo will be made public and will contain the smart contracts to be reviewed and all the information needed for contest participants. The findings repo will be made public after the contest report is published and your team has mitigated the identified issues.
 
 Some of the checklists in this doc are for **C4 (🐺)** and some of them are for **you as the contest sponsor (⭐️)**.
 
 ---
-
-
 
 # Repo setup
 
@@ -23,7 +22,6 @@ Some of the checklists in this doc are for **C4 (🐺)** and some of them are fo
 - [ ] Make sure your code is thoroughly commented using the [NatSpec format](https://docs.soliditylang.org/en/v0.5.10/natspec-format.html#natspec-format).
 - [ ] Please have final versions of contracts and documentation added/updated in this repo **no less than 24 hours prior to contest start time.**
 - [ ] Be prepared for a 🚨code freeze🚨 for the duration of the contest — important because it establishes a level playing field. We want to ensure everyone's looking at the same code, no matter when they look during the contest. (Note: this includes your own repo, since a PR can leak alpha to our wardens!)
-
 
 ---
 
@@ -49,6 +47,7 @@ Under "SPONSORS ADD INFO HERE" heading below, include the following:
 ---
 
 # KUMA Protocol contest details
+
 - Total Prize Pool: Sum of below awards
   - HM awards: $25,500 USDC (Notion Field: Main Pool)
   - QA report awards: $3,000 USDC (Notion Field: QA Pool, usually 10% of total award pool)
@@ -65,60 +64,103 @@ Under "SPONSORS ADD INFO HERE" heading below, include the following:
 
 Automated findings output for the contest can be found [here](add link to report) within an hour of contest opening.
 
-*Note for C4 wardens: Anything included in the automated findings output is considered a publicly known issue and is ineligible for awards.*
+_Note for C4 wardens: Anything included in the automated findings output is considered a publicly known issue and is ineligible for awards._
 
 [ ⭐️ SPONSORS ADD INFO HERE ]
 
 # Overview
 
-*Please provide some context about the code being audited, and identify any areas of specific concern in reviewing the code. (This is a good place to link to your docs, if you have them.)*
+This repo contains source contracts and testing suites for the MCAG contracts and the KUMA Protocol. Each corresponding project directory contains documentation in the /docs folder.
+
+The [src/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/) folder contains the contracts that comprise the decentralized KUMA protocol. See [docs/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/docs/kuma-protocol/) for KUMA protocol docs.
+
+The [src/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/) contains contracts that are managed by the centralized MCAG entity. See [docs/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/docs/mcag-contracts/) for MCAG contracts docs.
 
 # Scope
 
-*List all files in scope in the table below (along with hyperlinks) -- and feel free to add notes here to emphasize areas of focus.*
+### KUMA Protocol
 
-*For line of code counts, we recommend using [cloc](https://github.com/AlDanial/cloc).* 
+| Contract                                                                                                                                                  | SLOC | Purpose                                                                                                                 | Libraries used                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [src/kuma-protocol/KUMASwap.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KUMASwap.sol)                                               | 396  | Main contract that always swapping a Bond NFT for the KIBT ERC20, one KUMASwap per risk class (country, term, currency) | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/KIBToken.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KIBToken.sol)                                               | 248  | Interesting Bearing ERC20, one for each risk class                                                                      | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/KUMAFeeCollector.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KUMAFeeCollector.sol)                               | 157  |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/KUMAAddressProvider.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KUMAAddressProvider.sol)                         | 117  | AddressProvider that stores the mappings for the KIBT, KUMASwap and KUMAFeeCollector for each risk class                | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/MCAGRateFeed.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/MCAGRateFeed.sol)                                       | 74   | Contract that reads the price from the MCAG central bank rate oracle                                                    | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/KBCToken.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KBCToken.sol)                                               | 63   | A Clone Bond NFT Token that is issued when the KIBT yield is not high enough to buy back the original Bond NFT          | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/KUMAAccessController.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/KUMAAccessController.sol)                       | 9    |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/interfaces/IKUMASwap.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IKUMASwap.sol)                       | 58   |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/interfaces/IKIBToken.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IKIBToken.sol)                       | 35   |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/interfaces/IKUMAAddressProvider.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IKUMAAddressProvider.sol) | 26   |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/interfaces/IKUMAFeeCollector.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IKUMAFeeCollector.sol)       | 20   |                                                                                                                         |
+| [src/kuma-protocol/interfaces/IKBCToken.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IKBCToken.sol)                       | 18   |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/kuma-protocol/interfaces/IMCAGRateFeed.sol](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/interfaces/IMCAGRateFeed.sol)               | 13   |                                                                                                                         | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| Total                                                                                                                                                     | 1234 |                                                                                                                         |                                                          |
 
-| Contract | SLOC | Purpose | Libraries used |  
-| ----------- | ----------- | ----------- | ----------- |
-| [contracts/folder/sample.sol](contracts/folder/sample.sol) | 123 | This contract does XYZ | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+### Mimo Capital AG Contracts
+
+| Contract                                                                                                                                                          | SLOC | Purpose                                                                                  | Libraries used                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [src/mcag-contracts/KUMABondToken.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/KUMABondToken.sol)                                           | 134  | NFT that MCAG will issue for each purchased real world bond                              | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/KYCToken.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/KYCToken.sol)                                                     | 77   | Untransferable NFT that MCAG will airdrop to KYC users                                   | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/MCAGAggregator.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/MCAGAggregator.sol)                                         | 67   | Oracle that MCAG manages to publish central bank rates                                   | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/Blacklist.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/Blacklist.sol)                                                   | 33   | Central registry for blacklisted addresses that are not allowed to interact with the NFT | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/AccessController.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/AccessController.sol)                                     | 16   |                                                                                          | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/interfaces/IKUMABondToken.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/interfaces/IKUMABondToken.sol)                   | 32   |                                                                                          | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/interfaces/IKYCToken.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/interfaces/IKYCToken.sol)                             | 17   |                                                                                          | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| [src/mcag-contracts/interfaces/MCAGAggregatorInterface.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/interfaces/MCAGAggregatorInterface.sol) | 15   |                                                                                          |                                                          |
+| [src/mcag-contracts/interfaces/IBlacklist.sol](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/interfaces/IBlacklist.sol)                           | 11   |                                                                                          | [`@openzeppelin/*`](https://openzeppelin.com/contracts/) |
+| Total                                                                                                                                                             | 402  |                                                                                          |                                                          |
 
 ## Out of scope
 
-*List any files/contracts that are out of scope for this audit.*
+All other files in the repo
 
 # Additional Context
 
-*Describe any novel or unique curve logic or mathematical models implemented in the contracts*
+Please see the [docs/](https://github.com/code-423n4/2023-02-kuma/docs/) folder for more context.
 
-*Sponsor, please confirm/edit the information below.*
+## Scoping Details
 
-## Scoping Details 
 ```
-- If you have a public code repo, please share it here:  
-- How many contracts are in scope?:   
-- Total SLoC for these contracts?:  
-- How many external imports are there?:  
-- How many separate interfaces and struct definitions are there for the contracts within scope?:  
-- Does most of your code generally use composition or inheritance?:   
-- How many external calls?:   
-- What is the overall line coverage percentage provided by your tests?:  
-- Is there a need to understand a separate part of the codebase / get context in order to audit this part of the protocol?:   
-- Please describe required context:   
-- Does it use an oracle?:  
-- Does the token conform to the ERC20 standard?:  
-- Are there any novel or unique curve logic or mathematical models?: 
-- Does it use a timelock function?:  
-- Is it an NFT?: 
-- Does it have an AMM?:   
-- Is it a fork of a popular project?:   
-- Does it use rollups?:   
-- Is it multi-chain?:  
-- Does it use a side-chain?: 
+- If you have a public code repo, please share it here: n/a
+- How many contracts are in scope?: 22
+- Total SLoC for these contracts?:  1634
+- How many external imports are there?: n/a
+- How many separate interfaces and struct definitions are there for the contracts within scope?: 3 structs, 10 interfaces
+- Does most of your code generally use composition or inheritance?: inheritance
+- How many external calls?: n/a
+- What is the overall line coverage percentage provided by your tests?:
+- Is there a need to understand a separate part of the codebase / get context in order to audit this part of the protocol?: KUMA Protocol will depend on the Mimo Capital AG contracts
+- Please describe required context: Please read the docs in each respective folder
+- Does it use an oracle?: No
+- Does the token conform to the ERC20 standard?: Yes
+- Are there any novel or unique curve logic or mathematical models?: No
+- Does it use a timelock function?: No
+- Is it an NFT?: Yes
+- Does it have an AMM?: No
+- Is it a fork of a popular project?: No
+- Does it use rollups?: No
+- Is it multi-chain?: No
+- Does it use a side-chain?: No
 ```
 
 # Tests
 
-*Provide every step required to build the project from a fresh git clone, as well as steps to run the tests with a gas report.* 
+This repo contains relevant tests for the two source projects. To run tests:
 
-*Note: Many wardens run Slither as a first pass for testing.  Please document any known errors with no workaround.* 
+1. Make sure all git submodules are installed using `git submodule update --init`
+2. Run `forge test`
+
+Make sure `forge` is at least on the following version: `forge 0.2.0 (1a56901 2023-02-15T00:05:20.802314Z)`
+
+## Running Static Analysis
+
+The root folder contains a `slither.config.json` file that can be used to run static analysis on the `kuma-protocol` project. Refer to the [foundry docs](https://book.getfoundry.sh/config/static-analyzers?highlight=slither.config#slither) on how to run Slither
+
+## Invariant testing
+
+For the following files the invariants should be run with `fail_on_revert = true` :
+
+- [KIBToken.fail.on.revert.invariant](./test/kuma-protocol/invariants/KIBToken.fail.on.revert.invariant.sol)
+- [KUMASwap.fail.on.revert.invariant](./test/kuma-protocol/invariants/KUMASwap.fail.on.revert.invariant.sol)
