@@ -180,6 +180,8 @@ This repo contains relevant tests for the two source projects. To run tests:
 
 Make sure `forge` is at least on the following version: `forge 0.2.0 (1a56901 2023-02-15T00:05:20.802314Z)`
 
+To skip invariant and fuzz tests run `forge test --no-match-path "{*invariant*,*fuzz*}"`
+
 ## Quickstart Command
 
 Alternatively use the following quickstart command:
