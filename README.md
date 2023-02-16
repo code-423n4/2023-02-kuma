@@ -196,7 +196,16 @@ The root folder contains a `slither.config.json` file that can be used to run st
 
 ## Invariant testing
 
-For the following files the invariants should be run with `fail_on_revert = true` :
+For the following files the invariants should be run with `fail_on_revert = true` in the `foundry.toml`:
+
+```
+[invariant]
+runs = 256
+depth = 256
+fail_on_revert = true
+```
 
 - [KIBToken.fail.on.revert.invariant](https://github.com/code-423n4/2023-02-kuma/tree/main/test/kuma-protocol/invariants/KIBToken.fail.on.revert.invariant.sol)
 - [KUMASwap.fail.on.revert.invariant](https://github.com/code-423n4/2023-02-kuma/tree/main/test/kuma-protocol/invariants/KUMASwap.fail.on.revert.invariant.sol)
+
+Then run the tests with `forge test --match-path "*fail.on.revert*"`
