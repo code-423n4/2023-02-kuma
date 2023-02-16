@@ -156,7 +156,7 @@ Please see the [docs/](https://github.com/code-423n4/2023-02-kuma/tree/main/docs
 - How many separate interfaces and struct definitions are there for the contracts within scope?: 3 structs, 10 interfaces
 - Does most of your code generally use composition or inheritance?: inheritance
 - How many external calls?: n/a
-- What is the overall line coverage percentage provided by your tests?:
+- What is the overall line coverage percentage provided by your tests?: 100%
 - Is there a need to understand a separate part of the codebase / get context in order to audit this part of the protocol?: KUMA Protocol will depend on the Mimo Capital AG contracts
 - Please describe required context: Please read the docs in each respective folder
 - Does it use an oracle?: No
