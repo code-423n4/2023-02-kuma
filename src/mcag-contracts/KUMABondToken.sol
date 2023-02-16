@@ -80,6 +80,7 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
      * @dev Can only be called under specific conditions :
      *      - Caller must have BURN_ROLE
      *      - Contract must not be paused
+     *      - Caller must be the owner of the bond
      * @param tokenId bond Id.
      */
     function redeem(uint256 tokenId) external override onlyRole(Roles.MCAG_BURN_ROLE) whenNotPaused {
