@@ -7,7 +7,7 @@
   - Judge + presort awards: $8,100 USDC 
   - Scout awards: $500 USDC 
 - Join [C4 Discord](https://discord.gg/code4rena) to register
-- Submit findings [using the C4 form](https://code4rena.com/contests/2023-02-kuma-protocol-contest/submit)
+- Submit findings [using the C4 form](https://code4rena.com/contests/2023-02-kuma-protocol-versus-contest/submit)
 - [Read our guidelines for more details](https://docs.code4rena.com/roles/wardens)
 - Starts February 17, 2023 20:00 UTC
 - Ends February 22, 2023 20:00 UTC
@@ -22,9 +22,9 @@ _Note for C4 wardens: Anything included in the automated findings output is cons
 
 This repo contains source contracts and testing suites for the MCAG contracts and the KUMA Protocol. Each corresponding project directory contains documentation in the /docs folder.
 
-The [src/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/src/kuma-protocol/) folder contains the contracts that comprise the decentralized KUMA protocol. See [docs/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/tree/main/docs/kuma-protocol/) for KUMA protocol docs.
+The [src/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/tree/main/src/kuma-protocol) folder contains the contracts that comprise the decentralized KUMA protocol. See [docs/kuma-protocol/](https://github.com/code-423n4/2023-02-kuma/tree/main/docs/kuma-protocol/) for KUMA protocol docs.
 
-The [src/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/src/mcag-contracts/) contains contracts that are managed by the centralized MCAG entity. See [docs/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/tree/main/docs/mcag-contracts/) for MCAG contracts docs.
+The [src/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/tree/main/src/mcag-contracts) contains contracts that are managed by the centralized MCAG entity. See [docs/mcag-contracts/](https://github.com/code-423n4/2023-02-kuma/tree/main/docs/mcag-contracts/) for MCAG contracts docs.
 
 ## Scope
 ### Files in scope
