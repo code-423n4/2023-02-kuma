@@ -12,12 +12,6 @@
 - Starts February 17, 2023 20:00 UTC
 - Ends February 22, 2023 20:00 UTC
 
-## Automated Findings / Publicly Known Issues
-
-Automated findings output for the contest can be found [here](add link to report) within an hour of contest opening.
-
-_Note for C4 wardens: Anything included in the automated findings output is considered a publicly known issue and is ineligible for awards._
-
 # Overview
 
 This repo contains source contracts and testing suites for the MCAG contracts and the KUMA Protocol. Each corresponding project directory contains documentation in the /docs folder.
