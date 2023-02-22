@@ -1,4 +1,4 @@
-# KUMA Protocol contest details
+# KUMA Protocol Versus contest details
 
 - Total Prize Pool: $38,600 USDC
   - HM awards: $25,500 USDC 
