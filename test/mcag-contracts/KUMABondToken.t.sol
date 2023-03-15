@@ -210,6 +210,15 @@ contract KUMABondTokenTest is Test {
         _kumaBondToken.approve(_alice, 1);
     }
 
+    function test_approve_RevertWhen_TokenOwnerBlacklistedAndApproveCalledByOperator() external {
+        _kumaBondToken.issueBond(_alice, _bond);
+        vm.prank(_alice);
+        _kumaBondToken.setApprovalForAll(address(this), true);
+        _blacklist.blacklist(_alice);
+        vm.expectRevert(abi.encodeWithSelector(Errors.BLACKLIST_ACCOUNT_IS_BLACKLISTED.selector, _alice));
+        _kumaBondToken.approve(_bob, 1);
+    }
+
     function test_approve_RevertWhen_ApproveToSelf() public {
         _kumaBondToken.issueBond(address(this), _bond);
         vm.expectRevert(abi.encodeWithSelector(Errors.ERC721_APPROVAL_TO_CURRENT_OWNER.selector));
