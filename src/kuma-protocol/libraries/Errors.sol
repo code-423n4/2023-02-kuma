@@ -53,4 +53,5 @@ library Errors {
     error RISK_CATEGORY_MISMATCH();
     error EXPIRED_BONDS_MUST_BE_BOUGHT_FIRST();
     error BOND_NOT_MATURED();
+    error CANNOT_TRANSFER_TO_SELF();
 }
