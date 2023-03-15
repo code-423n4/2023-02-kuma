@@ -11,9 +11,10 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeab
 import {WadRayMath} from "./libraries/WadRayMath.sol";
 
 contract MCAGRateFeed is IMCAGRateFeed, UUPSUpgradeable, Initializable {
-    uint256 private constant _MIN_RATE_COUPON = WadRayMath.RAY;
     uint8 private constant _DECIMALS = 27;
+    uint256 private constant _MIN_RATE_COUPON = WadRayMath.RAY;
 
+    uint256 private _stalenessThreshold;
     IAccessControl private _accessController;
 
     mapping(bytes32 => MCAGAggregatorInterface) private _oracles;
@@ -30,21 +31,25 @@ contract MCAGRateFeed is IMCAGRateFeed, UUPSUpgradeable, Initializable {
     /**
      * @param accessController KUMA DAO AccessController.
      */
-    function initialize(IAccessControl accessController) external override initializer {
+    function initialize(IAccessControl accessController, uint256 stalenessThreshold) external override initializer {
         if (address(accessController) == address(0)) {
             revert Errors.CANNOT_SET_TO_ADDRESS_ZERO();
         }
+        if (stalenessThreshold == 0) {
+            revert Errors.CANNOT_SET_TO_ZERO();
+        }
         _accessController = accessController;
+        _stalenessThreshold = stalenessThreshold;
 
         emit AccessControllerSet(address(accessController));
+        emit StalenessThresholdSet(stalenessThreshold);
     }
 
     /**
      * @notice Set an MCAGAggregator for a specific risk category.
-     * @dev There is no need for staleness check as central bank rate is rarely updated.
      * @param currency Currency of the bond - example : USD
      * @param country Treasury issuer - example : US
-     * @param term Lifetime of the bond ie maturity in seconds - issuance date - example : 10  * years
+     * @param term Lifetime of the bond ie maturity in seconds - issuance date - example : 10 years
      */
     function setOracle(bytes4 currency, bytes4 country, uint64 term, MCAGAggregatorInterface oracle)
         external
@@ -64,6 +69,22 @@ contract MCAGRateFeed is IMCAGRateFeed, UUPSUpgradeable, Initializable {
         emit OracleSet(address(oracle), currency, country, term);
     }
 
+    /**
+     * @notice Sets a new staleness threshold.
+     * @param stalenessThreshold New staleness threshold in seconds.
+     */
+    function setStalenessThreshold(uint256 stalenessThreshold) external override onlyManager {
+        if (stalenessThreshold == 0) {
+            revert Errors.CANNOT_SET_TO_ZERO();
+        }
+        _stalenessThreshold = stalenessThreshold;
+
+        emit StalenessThresholdSet(stalenessThreshold);
+    }
+
+    /**
+     * @return KUMA DAO AccessController.
+     */
     function getAccessController() external view override returns (IAccessControl) {
         return _accessController;
     }
@@ -74,7 +95,11 @@ contract MCAGRateFeed is IMCAGRateFeed, UUPSUpgradeable, Initializable {
      */
     function getRate(bytes32 riskCategory) external view override returns (uint256) {
         MCAGAggregatorInterface oracle = _oracles[riskCategory];
-        (, int256 answer,,,) = oracle.latestRoundData();
+        (, int256 answer,, uint256 updatedAt,) = oracle.latestRoundData();
+
+        if (block.timestamp - updatedAt > _stalenessThreshold) {
+            revert Errors.ORACLE_ANSWER_IS_STALE();
+        }
 
         if (answer < 0) {
             return _MIN_RATE_COUPON;
@@ -102,6 +127,13 @@ contract MCAGRateFeed is IMCAGRateFeed, UUPSUpgradeable, Initializable {
      */
     function getOracle(bytes32 riskCategory) external view override returns (MCAGAggregatorInterface) {
         return _oracles[riskCategory];
+    }
+
+    /**
+     * @return Current staleness threshold.
+     */
+    function getStalenessThreshold() external view override returns (uint256) {
+        return _stalenessThreshold;
     }
 
     /**
