@@ -36,6 +36,7 @@ abstract contract BaseSetUp is Test {
     bytes32 internal constant _RISK_CATEGORY = keccak256(abi.encode(_CURRENCY, _COUNTRY, _TERM));
     uint256 internal constant _YIELD = 1000000001547125957863212449; // % 5 per year
     uint256 internal constant _EPOCH_LENGTH = 4 hours;
+    uint256 internal constant _STALENESS_THRESHOLD = type(uint256).max;
 
     address internal _alice = vm.addr(1);
     address internal _bob = vm.addr(2);
@@ -144,7 +145,8 @@ abstract contract BaseSetUp is Test {
         MCAGRateFeed MCAGRateFeed_ = new MCAGRateFeed();
         _rateFeed = IMCAGRateFeed(
             _deployUUPSProxy(
-                address(MCAGRateFeed_), abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, _KUMAAccessController)
+                address(MCAGRateFeed_),
+                abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, _KUMAAccessController, _STALENESS_THRESHOLD)
             )
         );
 

@@ -10,6 +10,7 @@ import {WadRayMath} from "@kuma/libraries/WadRayMath.sol";
 contract MCAGRateFeedTest is BaseSetUp {
     event AccessControllerSet(address accessController);
     event OracleSet(address oracle, bytes4 indexed currency, bytes4 indexed country, uint64 indexed term);
+    event StalenessThresholdSet(uint256 stalenessThreshold);
 
     MCAGAggregatorInterface private _oracle = MCAGAggregatorInterface(vm.addr(7));
 
@@ -23,6 +24,7 @@ contract MCAGRateFeedTest is BaseSetUp {
         );
         vm.mockCall(address(_oracle), abi.encodeWithSelector(_oracle.decimals.selector), abi.encode(27));
         _rateFeed.setOracle(_CURRENCY, _COUNTRY, _TERM, _oracle);
+        _rateFeed.setStalenessThreshold(1 days);
     }
 
     function test_initialize() public {
@@ -34,17 +36,31 @@ contract MCAGRateFeedTest is BaseSetUp {
 
         vm.expectEmit(false, false, false, true);
         emit AccessControllerSet(address(_KUMAAccessController));
+        vm.expectEmit(false, false, false, true);
+        emit StalenessThresholdSet(_STALENESS_THRESHOLD);
 
-        _deployUUPSProxy(
+        address _newRateFeed = _deployUUPSProxy(
             address(newRateFeed),
-            abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, address(_KUMAAccessController))
+            abi.encodeWithSelector(
+                IMCAGRateFeed.initialize.selector, address(_KUMAAccessController), _STALENESS_THRESHOLD
+            )
         );
+
+        assertEq(IMCAGRateFeed(_newRateFeed).getStalenessThreshold(), _STALENESS_THRESHOLD);
     }
 
     function test_initialize_RevertWhen_InitializedWithInvalidParameters() public {
         MCAGRateFeed newRateFeed = new MCAGRateFeed();
         vm.expectRevert(Errors.CANNOT_SET_TO_ADDRESS_ZERO.selector);
-        _deployUUPSProxy(address(newRateFeed), abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, address(0)));
+        _deployUUPSProxy(
+            address(newRateFeed),
+            abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, address(0), _STALENESS_THRESHOLD)
+        );
+        vm.expectRevert(Errors.CANNOT_SET_TO_ZERO.selector);
+        _deployUUPSProxy(
+            address(newRateFeed),
+            abi.encodeWithSelector(IMCAGRateFeed.initialize.selector, address(_KUMAAccessController), 0)
+        );
     }
 
     function test_setOracle() public {
@@ -74,6 +90,25 @@ contract MCAGRateFeedTest is BaseSetUp {
         _rateFeed.setOracle(_CURRENCY, _COUNTRY, 0, _oracle);
         vm.expectRevert(Errors.CANNOT_SET_TO_ADDRESS_ZERO.selector);
         _rateFeed.setOracle(_CURRENCY, _COUNTRY, _TERM, MCAGAggregatorInterface(address(0)));
+    }
+
+    function test_setStalenessThreshold() public {
+        uint256 newStalenessThreshold = 1 days * 2;
+        vm.expectEmit(false, false, false, true);
+        emit StalenessThresholdSet(newStalenessThreshold);
+        _rateFeed.setStalenessThreshold(newStalenessThreshold);
+
+        assertEq(_rateFeed.getStalenessThreshold(), newStalenessThreshold);
+    }
+
+    function test_setStalenessThreshold_RevertWhen_CallerIsNotManager() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Errors.ACCESS_CONTROL_ACCOUNT_IS_MISSING_ROLE.selector, _alice, Roles.KUMA_MANAGER_ROLE
+            )
+        );
+        vm.prank(_alice);
+        _rateFeed.setStalenessThreshold(1 days * 2);
     }
 
     function test_getRate_WhenOracleDecimalsEqRateFeedDecimals() public {
@@ -116,6 +151,12 @@ contract MCAGRateFeedTest is BaseSetUp {
             abi.encode(1, 0, 0, block.timestamp, 1)
         );
         assertEq(_rateFeed.getRate(_RISK_CATEGORY), WadRayMath.RAY);
+    }
+
+    function test_getRate_RevertWhen_OracleAnswerIsStale() public {
+        skip(1 days * 2);
+        vm.expectRevert(Errors.ORACLE_ANSWER_IS_STALE.selector);
+        _rateFeed.getRate(_RISK_CATEGORY);
     }
 
     function test_upgrade_RevertWhen_CallerIsNotManager() public {

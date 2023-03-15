@@ -235,4 +235,14 @@ contract KUMASwapSellBond is KUMASwapSetUp {
         vm.expectRevert(Errors.DEPRECATION_MODE_ENABLED.selector);
         _KUMASwap.sellBond(1);
     }
+   
+    /**
+     * @notice Tests that sellBond reverts when oracle answer is stale.
+     */
+    function test_sellBond_RevertWhen_OracleAnswerIsStale() public {
+        _rateFeed.setStalenessThreshold(1 days);
+        skip(1 days + 1);
+        vm.expectRevert(Errors.ORACLE_ANSWER_IS_STALE.selector);
+        _KUMASwap.sellBond(1);
+    } 
 }

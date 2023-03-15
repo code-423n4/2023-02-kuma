@@ -7,10 +7,13 @@ import {MCAGAggregatorInterface} from "@mcag/interfaces/MCAGAggregatorInterface.
 interface IMCAGRateFeed {
     event AccessControllerSet(address accessController);
     event OracleSet(address oracle, bytes4 indexed currency, bytes4 indexed country, uint64 indexed term);
+    event StalenessThresholdSet(uint256 stalenessThreshold);
 
-    function initialize(IAccessControl accessController) external;
+    function initialize(IAccessControl accessController, uint256 stalenessThreshold) external;
 
     function setOracle(bytes4 currency, bytes4 country, uint64 term, MCAGAggregatorInterface oracle) external;
+
+    function setStalenessThreshold(uint256 stalenessThreshold) external;
 
     function minRateCoupon() external view returns (uint256);
 
@@ -21,4 +24,6 @@ interface IMCAGRateFeed {
     function getRate(bytes32 riskCategory) external view returns (uint256);
 
     function getOracle(bytes32 riskCategory) external view returns (MCAGAggregatorInterface);
+
+    function getStalenessThreshold() external view returns (uint256);
 }
