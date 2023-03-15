@@ -313,6 +313,23 @@ contract KUMAFeeCollectorTest is BaseSetUp {
         }
     }
 
+    function test_changePayees_RevertWhen_DuplicatePayees() public {
+        address[] memory newPayees = new address[](4);
+        uint256[] memory newShares = new uint256[](4);
+
+        newPayees[0] = vm.addr(10);
+        newPayees[1] = vm.addr(10);
+        newPayees[2] = vm.addr(11);
+        newPayees[3] = vm.addr(12);
+        newShares[0] = 25;
+        newShares[1] = 25;
+        newShares[2] = 25;
+        newShares[3] = 25;
+
+        vm.expectRevert(Errors.PAYEE_ALREADY_EXISTS.selector);
+        _KUMAFeeCollector.changePayees(newPayees, newShares);
+    }
+
     function test_changePayees_RevertWhen_PayeesAndSharesMistmached() public {
         address[] memory newPayees = new address[](2);
         uint256[] memory newShares = new uint256[](1);

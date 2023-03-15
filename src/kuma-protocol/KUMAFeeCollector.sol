@@ -180,7 +180,9 @@ contract KUMAFeeCollector is IKUMAFeeCollector, UUPSUpgradeable, Initializable {
             }
 
             address payee = newPayees[i];
-            _payees.add(payee);
+            if (!_payees.add(payee)) {
+                revert Errors.PAYEE_ALREADY_EXISTS();
+            }
             _shares[payee] = newShares[i];
             _totalShares += newShares[i];
 
