@@ -102,33 +102,28 @@ contract KYCToken is ERC721, IKYCToken {
     /**
      * @dev Token is non transferable.
      */
-    function approve(address to, uint256 tokenId) public pure override(ERC721, IERC721) {
+    function approve(address, uint256) public pure override(ERC721, IERC721) {
         revert Errors.TOKEN_IS_NOT_TRANSFERABLE();
     }
 
     /**
      * @dev Token is non transferable.
      */
-    function setApprovalForAll(address operator, bool approved) public pure override(ERC721, IERC721) {
+    function setApprovalForAll(address, bool) public pure override(ERC721, IERC721) {
         revert Errors.TOKEN_IS_NOT_TRANSFERABLE();
     }
 
     /**
      * @dev Token is non transferable.
      */
-    function transferFrom(address from, address to, uint256 tokenId) public pure override(ERC721, IERC721) {
-        revert Errors.TOKEN_IS_NOT_TRANSFERABLE();
-    }
-
-    /**
-     * @dev Token is non transferable.
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data)
-        public
+    function _beforeTokenTransfer(address from, address to, uint256, /* firstTokenId */ uint256)
+        internal
         pure
-        override(ERC721, IERC721)
+        override
     {
-        revert Errors.TOKEN_IS_NOT_TRANSFERABLE();
+        if (from != address(0) && to != address(0)) {
+            revert Errors.TOKEN_IS_NOT_TRANSFERABLE();
+        }
     }
 
     /**

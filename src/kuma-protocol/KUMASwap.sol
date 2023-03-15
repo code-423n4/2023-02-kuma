@@ -119,7 +119,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
         IKUMAAddressProvider KUMAAddressProvider = _KUMAAddressProvider;
         IKUMABondToken KUMABondToken = IKUMABondToken(KUMAAddressProvider.getKUMABondToken());
         IKUMABondToken.Bond memory bond = KUMABondToken.getBond(tokenId);
-
+        
         if (bond.riskCategory != _riskCategory) {
             revert Errors.WRONG_RISK_CATEGORY();
         }
@@ -558,12 +558,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
     /**
      * @dev See {IERC721Receiver-onERC721Received}.
      */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
-        external
-        pure
-        override
-        returns (bytes4)
-    {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
     }
 
@@ -611,7 +606,9 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
 
         uint256 minCoupon = _coupons.at(0);
 
-        for (uint256 i = 1; i < _coupons.length();) {
+        uint256 couponsLength = _coupons.length();
+
+        for (uint256 i = 1; i < couponsLength;) {
             uint256 coupon = _coupons.at(i);
 
             if (coupon < minCoupon) {

@@ -171,7 +171,10 @@ contract KUMAFeeCollector is IKUMAFeeCollector, UUPSUpgradeable, Initializable {
             _totalShares = 0;
         }
 
-        for (uint256 i; i < newPayees.length; i++) {
+        uint256 newPayeesLength = newPayees.length;
+        uint256 totalShares = _totalShares;
+
+        for (uint256 i; i < newPayeesLength;) {
             if (newPayees[i] == address(0)) {
                 revert Errors.CANNOT_SET_TO_ADDRESS_ZERO();
             }
@@ -180,12 +183,20 @@ contract KUMAFeeCollector is IKUMAFeeCollector, UUPSUpgradeable, Initializable {
             }
 
             address payee = newPayees[i];
-            _payees.add(payee);
+            if (!_payees.add(payee)) {
+                revert Errors.PAYEE_ALREADY_EXISTS();
+            }
             _shares[payee] = newShares[i];
-            _totalShares += newShares[i];
+            totalShares += newShares[i];
 
             emit PayeeAdded(payee, newShares[i]);
+
+            unchecked {
+                ++i;
+            }
         }
+
+        _totalShares = totalShares;
     }
 
     function getKUMAAddressProvider() external view returns (IKUMAAddressProvider) {
@@ -205,9 +216,13 @@ contract KUMAFeeCollector is IKUMAFeeCollector, UUPSUpgradeable, Initializable {
     function _release(IERC20 KIBToken, uint256 availableIncome) private {
         uint256 totalShares = _totalShares;
 
-        for (uint256 i; i < _payees.length(); i++) {
+        for (uint256 i; i < _payees.length();) {
             address payee = _payees.at(i);
             KIBToken.safeTransfer(payee, availableIncome * _shares[payee] / totalShares);
+
+            unchecked {
+                ++i;
+            }
         }
 
         emit FeeReleased(availableIncome);

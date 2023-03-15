@@ -87,6 +87,7 @@ contract MCAGAggregator is MCAGAggregatorInterface {
     {
         roundId = _roundId;
         answer = _answer;
+        startedAt = _updatedAt;
         updatedAt = _updatedAt;
         answeredInRound = _roundId;
     }

@@ -267,7 +267,7 @@ contract KUMABondTokenTest is Test {
 
     function test_transferFrom_RevertWhen_NotApproved() public {
         _kumaBondToken.issueBond(address(this), _bond);
-        vm.expectRevert(abi.encodeWithSelector(Errors.ERC721_CALLER_IS_NOT_TOKEN_OWNER_OR_APPROVED.selector));
+        vm.expectRevert("ERC721: caller is not token owner or approved");
         vm.prank(_alice);
         _kumaBondToken.transferFrom(address(this), _alice, 1);
     }
@@ -291,6 +291,7 @@ contract KUMABondTokenTest is Test {
     function test_transferFrom_RevertWhen_MsgSenderBlacklisted() public {
         _kumaBondToken.issueBond(address(this), _bond);
         _kumaBondToken.approve(_alice, 1);
+        _kumaBondToken.setApprovalForAll(_charlie, true);
         _blacklist.blacklist(_charlie);
         vm.expectRevert(abi.encodeWithSelector(Errors.BLACKLIST_ACCOUNT_IS_BLACKLISTED.selector, _charlie));
         vm.prank(_charlie);
@@ -318,7 +319,7 @@ contract KUMABondTokenTest is Test {
 
     function test_safeTransferFrom_RevertWhen_NotApproved() public {
         _kumaBondToken.issueBond(address(this), _bond);
-        vm.expectRevert(abi.encodeWithSelector(Errors.ERC721_CALLER_IS_NOT_TOKEN_OWNER_OR_APPROVED.selector));
+        vm.expectRevert("ERC721: caller is not token owner or approved");
         vm.prank(_alice);
         _kumaBondToken.safeTransferFrom(address(this), _alice, 1);
     }
@@ -342,6 +343,7 @@ contract KUMABondTokenTest is Test {
     function test_safeTransferFrom_RevertWhen_MsgSenderBlacklisted() public {
         _kumaBondToken.issueBond(address(this), _bond);
         _kumaBondToken.approve(_alice, 1);
+        _kumaBondToken.setApprovalForAll(_charlie, true);
         _blacklist.blacklist(_charlie);
         vm.expectRevert(abi.encodeWithSelector(Errors.BLACKLIST_ACCOUNT_IS_BLACKLISTED.selector, _charlie));
         vm.prank(_charlie);

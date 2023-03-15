@@ -37,7 +37,6 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
     uint256 private _totalBaseSupply; // Underlying assets supply (does not include rewards)
 
     mapping(address => uint256) private _baseBalances; // (does not include rewards)
-    mapping(address => mapping(address => uint256)) private _allowances;
 
     modifier onlyRole(bytes32 role) {
         if (!_KUMAAddressProvider.getAccessController().hasRole(role, msg.sender)) {
@@ -139,7 +138,7 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         _refreshCumulativeYield();
         _refreshYield();
 
-        uint256 newAccountBalance = this.balanceOf(account) + amount;
+        uint256 newAccountBalance = balanceOf(account) + amount;
         uint256 newBaseBalance = WadRayMath.wadToRay(newAccountBalance).rayDiv(_previousEpochCumulativeYield); // Store baseAmount in 27 decimals
 
         if (amount > 0) {
@@ -167,7 +166,7 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         _refreshCumulativeYield();
         _refreshYield();
 
-        uint256 startingAccountBalance = this.balanceOf(account);
+        uint256 startingAccountBalance = balanceOf(account);
         if (startingAccountBalance < amount) {
             revert Errors.ERC20_BURN_AMOUNT_EXCEEDS_BALANCE();
         }
@@ -273,12 +272,12 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         _refreshCumulativeYield();
         _refreshYield();
 
-        uint256 startingFromBalance = this.balanceOf(from);
+        uint256 startingFromBalance = balanceOf(from);
         if (startingFromBalance < amount) {
             revert Errors.ERC20_TRANSFER_AMOUNT_EXCEEDS_BALANCE();
         }
         uint256 newFromBalance = startingFromBalance - amount;
-        uint256 newToBalance = this.balanceOf(to) + amount;
+        uint256 newToBalance = balanceOf(to) + amount;
 
         uint256 previousEpochCumulativeYield_ = _previousEpochCumulativeYield;
         uint256 newFromBaseBalance = WadRayMath.wadToRay(newFromBalance).rayDiv(previousEpochCumulativeYield_);

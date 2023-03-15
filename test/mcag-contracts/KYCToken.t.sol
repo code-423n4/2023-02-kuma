@@ -132,11 +132,13 @@ contract KYCTokenTest is Test {
     }
 
     function test_transferFrom_RevertWhen_Called() public {
+        _kycToken.mint(address(this), _kycData);
         vm.expectRevert(Errors.TOKEN_IS_NOT_TRANSFERABLE.selector);
-        _kycToken.transferFrom(_alice, address(this), 1);
+        _kycToken.transferFrom(address(this), _alice, 1);
     }
 
     function test_safeTransferFrom_RevertWhen_Called() public {
+        _kycToken.mint(address(this), _kycData);
         vm.expectRevert(Errors.TOKEN_IS_NOT_TRANSFERABLE.selector);
         _kycToken.safeTransferFrom(address(this), _alice, 1);
     }

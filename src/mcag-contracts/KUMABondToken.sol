@@ -84,7 +84,7 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
      * @param tokenId bond Id.
      */
     function redeem(uint256 tokenId) external override onlyRole(Roles.MCAG_BURN_ROLE) whenNotPaused {
-        if (_ownerOf(tokenId) != _msgSender()) {
+        if (_ownerOf(tokenId) != msg.sender) {
             revert Errors.ERC721_CALLER_IS_NOT_TOKEN_OWNER();
         }
         delete _bonds[tokenId];
@@ -153,7 +153,7 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
             revert Errors.ERC721_APPROVAL_TO_CURRENT_OWNER();
         }
 
-        if (_msgSender() != owner && !isApprovedForAll(owner, _msgSender())) {
+        if (msg.sender != owner && !isApprovedForAll(owner, msg.sender)) {
             revert Errors.ERC721_APPROVE_CALLER_IS_NOT_TOKEN_OWNER_OR_APPROVED_FOR_ALL();
         }
 
@@ -173,48 +173,23 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
         notBlacklisted(msg.sender)
         notBlacklisted(operator)
     {
-        _setApprovalForAll(_msgSender(), operator, approved);
+        _setApprovalForAll(msg.sender, operator, approved);
     }
 
     /**
-     * @dev See {IERC721-transferFrom}.
+     * @dev See {IERC721-_beforeTokenTransfer}.
      * @dev Adds the following conditions to the call :
      *      - Caller, from and to must not be blacklisted
      *      - Contract must not be paused
      */
-    function transferFrom(address from, address to, uint256 tokenId)
-        public
-        override(ERC721, IERC721)
+    function _beforeTokenTransfer(address from, address to, uint256, uint256)
+        internal
+        override
         whenNotPaused
         notBlacklisted(msg.sender)
         notBlacklisted(from)
         notBlacklisted(to)
-    {
-        if (!_isApprovedOrOwner(_msgSender(), tokenId)) {
-            revert Errors.ERC721_CALLER_IS_NOT_TOKEN_OWNER_OR_APPROVED();
-        }
-        _transfer(from, to, tokenId);
-    }
-
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     * @dev Adds the following conditions to the call :
-     *      - Caller, from and to must not be blacklisted
-     *      - Contract must not be paused
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data)
-        public
-        override(ERC721, IERC721)
-        whenNotPaused
-        notBlacklisted(msg.sender)
-        notBlacklisted(from)
-        notBlacklisted(to)
-    {
-        if (!_isApprovedOrOwner(_msgSender(), tokenId)) {
-            revert Errors.ERC721_CALLER_IS_NOT_TOKEN_OWNER_OR_APPROVED();
-        }
-        _safeTransfer(from, to, tokenId, data);
-    }
+    {}
 
     /**
      * @dev See {IERC721-_baseUri}.

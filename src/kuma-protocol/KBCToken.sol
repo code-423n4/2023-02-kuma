@@ -48,7 +48,7 @@ contract KBCToken is ERC721Upgradeable, IKBCToken, UUPSUpgradeable {
      * @param to Clone bond NFT receiver.
      * @param cBond Clone bond struct storing metadata.
      */
-    function issueBond(address to, CloneBond memory cBond)
+    function issueBond(address to, CloneBond calldata cBond)
         external
         override
         onlyKUMASwap(cBond.parentId)
@@ -69,10 +69,10 @@ contract KBCToken is ERC721Upgradeable, IKBCToken, UUPSUpgradeable {
      * @param tokenId Clone bond Id.
      */
     function redeem(uint256 tokenId) external override onlyKUMASwap(_bonds[tokenId].parentId) {
-        CloneBond memory cBond = _bonds[tokenId];
+        uint256 parentId = _bonds[tokenId].parentId;
         delete _bonds[tokenId];
         _burn(tokenId);
-        emit CloneBondRedeemed(tokenId, cBond.parentId);
+        emit CloneBondRedeemed(tokenId, parentId);
     }
 
     function getKUMAAddressProvider() external view override returns (IKUMAAddressProvider) {
