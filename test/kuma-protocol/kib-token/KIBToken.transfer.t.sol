@@ -61,14 +61,14 @@ contract KIBTokenTransfer is KIBTokenSetUp {
         _KIBToken.transferFrom(address(this), _alice, 5 ether);
     }
 
-    function test_transferFrom_MaxUintApproval() public {
+    function test_transfer_From_Max_Uint_Approval() public {
         _KIBToken.mint(address(this), 10 ether);
         _KIBToken.approve(_alice, type(uint256).max);
         vm.prank(_alice);
         _KIBToken.transferFrom(address(this), _alice, 5 ether);
     }
 
-    function test_transferFrom_ApproveBeforeRewards() public {
+    function test_transfer_From_Approve_Before_Rewards() public {
         _KIBToken.mint(address(this), 10 ether);
         _KIBToken.approve(_alice, 10 ether);
         vm.warp(block.timestamp + 365 days);
