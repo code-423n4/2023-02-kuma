@@ -146,6 +146,7 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
         whenNotPaused
         notBlacklisted(to)
         notBlacklisted(msg.sender)
+        notBlacklisted(ownerOf(tokenId))
     {
         address owner = ERC721.ownerOf(tokenId);
 
