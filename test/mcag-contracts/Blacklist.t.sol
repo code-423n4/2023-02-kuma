@@ -50,6 +50,12 @@ contract BlacklistTest is Test {
         _blacklist.blacklist(address(this));
     }
 
+    function test_blackilst_RevertWhen_AccountIsAlreadyBlacklisted() public {
+        _blacklist.blacklist(_alice);
+        vm.expectRevert(abi.encodeWithSelector(Errors.BLACKLIST_ACCOUNT_IS_BLACKLISTED.selector, _alice));
+        _blacklist.blacklist(_alice);
+    }
+
     function test_unBlacklist() public {
         _blacklist.blacklist(_alice);
         vm.expectEmit(true, false, false, true);
@@ -63,5 +69,10 @@ contract BlacklistTest is Test {
         vm.expectRevert(Errors.BLACKLIST_CALLER_IS_NOT_BLACKLISTER.selector);
         vm.prank(_alice);
         _blacklist.unBlacklist(address(this));
+    }
+
+    function test_unBlacklist_RevertWhen_AccountIsNotBlacklisted() public {
+        vm.expectRevert(abi.encodeWithSelector(Errors.BLACKLIST_ACCOUNT_IS_NOT_BLACKLISTED.selector, _alice));
+        _blacklist.unBlacklist(_alice);
     }
 }

@@ -50,6 +50,30 @@ contract KIBTokenSetEpoch is KIBTokenSetUp {
         assertEq(_KIBToken.balanceOf(_alice), _YIELD.rayPow(4 hours).rayMul(10 ether));
     }
 
+    function test_setEpochLength_ToLowerEpochAndShiftBackOfPreviousEpochTimestamp() public {
+        _KIBToken.mint(_alice, 10 ether);
+        skip(4 hours);
+        uint256 aliceBalanceBefore = _KIBToken.balanceOf(_alice);
+
+        // Timestamp is now 30 years + 8 hours aligning with 4 hours epochs
+        // Set new epoch where block.timestamp % new epoch length is less than block.timestamp % old epoch length
+        uint256 previousEpochTimestampBefore = _KIBToken.getPreviousEpochTimestamp();
+        _KIBToken.setEpochLength(3 hours);
+        uint256 previousEpochTimestampAfter = _KIBToken.getPreviousEpochTimestamp();
+        uint256 aliceBalanceAfter = _KIBToken.balanceOf(_alice);
+
+        // Previous epoch timestamp should now be shifted back 2 hours per the formula
+        assertEq(previousEpochTimestampBefore - previousEpochTimestampAfter, 2 hours);
+        assertEq(block.timestamp - previousEpochTimestampAfter, 2 hours);
+        // Alice balance should remane the same
+        assertEq(aliceBalanceBefore, aliceBalanceAfter);
+
+        // Skip 1 hours to the end of the new epoch
+        skip(1 hours);
+        // Alice should now have accrued 5 hours of interests in total
+        assertEq(_KIBToken.balanceOf(_alice), _YIELD.rayPow(5 hours).rayMul(10 ether));
+    }
+
     function test_setEpochLength_RevertWhen_SetToZero() public {
         vm.expectRevert(Errors.EPOCH_LENGTH_CANNOT_BE_ZERO.selector);
         _KIBToken.setEpochLength(0);

@@ -35,6 +35,9 @@ contract Blacklist is IBlacklist {
      * @param account The address to blacklist
      */
     function blacklist(address account) external override onlyBlacklister {
+        if (_blacklisted[account]) {
+            revert Errors.BLACKLIST_ACCOUNT_IS_BLACKLISTED(account);
+        }
         _blacklisted[account] = true;
         emit Blacklisted(account);
     }
@@ -44,6 +47,9 @@ contract Blacklist is IBlacklist {
      * @param account The address to remove from the blacklist
      */
     function unBlacklist(address account) external override onlyBlacklister {
+        if (!_blacklisted[account]) {
+            revert Errors.BLACKLIST_ACCOUNT_IS_NOT_BLACKLISTED(account);
+        }
         _blacklisted[account] = false;
         emit UnBlacklisted(account);
     }

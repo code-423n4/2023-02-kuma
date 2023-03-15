@@ -10,7 +10,9 @@ library Errors {
     error ERC721_CALLER_IS_NOT_TOKEN_OWNER();
     error ACCESS_CONTROL_ACCOUNT_IS_MISSING_ROLE(address account, bytes32 role);
     error BLACKLIST_CALLER_IS_NOT_BLACKLISTER();
+    error BLACKLIST_ACCOUNT_IS_NOT_BLACKLISTED(address account);
     error BLACKLIST_ACCOUNT_IS_BLACKLISTED(address account);
     error TRANSMITTED_ANSWER_TOO_HIGH(int256 answer, int256 maxAnswer);
     error TOKEN_IS_NOT_TRANSFERABLE();
+    error KYC_DATA_OWNER_MISMATCH(address to, address owner);
 }

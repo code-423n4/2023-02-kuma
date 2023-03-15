@@ -47,6 +47,9 @@ contract KYCToken is ERC721, IKYCToken {
      * @param kycData KYCData struct storing metadata.
      */
     function mint(address to, KYCData calldata kycData) external override onlyRole(Roles.MCAG_MINT_ROLE) {
+        if (to != kycData.owner) {
+            revert Errors.KYC_DATA_OWNER_MISMATCH(to, kycData.owner);
+        }
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _kycData[tokenId] = kycData;

@@ -55,6 +55,21 @@ contract KIBTokenSetters is KIBTokenSetUp {
             )
         );
 
+        vm.expectRevert(Errors.NEW_EPOCH_LENGTH_TOO_HIGH.selector);
+        _deployUUPSProxy(
+            address(newKIBToken),
+            abi.encodeWithSelector(
+                IKIBToken.initialize.selector,
+                _NAME,
+                _SYMBOL,
+                365 days + 1,
+                _KUMAAddressProvider,
+                _CURRENCY,
+                _COUNTRY,
+                _TERM
+            )
+        );
+
         vm.expectRevert(Errors.CANNOT_SET_TO_ADDRESS_ZERO.selector);
         _deployUUPSProxy(
             address(newKIBToken),

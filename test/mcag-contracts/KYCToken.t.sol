@@ -72,6 +72,11 @@ contract KYCTokenTest is Test {
         _kycToken.mint(_alice, _kycData);
     }
 
+    function test_mint_RevertWhen_KycDataOwnerIsNotTheSameAsToAddress() public {
+        vm.expectRevert(abi.encodeWithSelector(Errors.KYC_DATA_OWNER_MISMATCH.selector, _alice, address(this)));
+        _kycToken.mint(_alice, _kycData);
+    }
+
     function test_burn() public {
         _kycToken.mint(address(this), _kycData);
         vm.expectEmit(false, false, false, true);

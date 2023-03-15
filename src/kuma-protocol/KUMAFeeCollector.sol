@@ -220,7 +220,7 @@ contract KUMAFeeCollector is IKUMAFeeCollector, UUPSUpgradeable, Initializable {
         IERC20 KIBToken = IERC20(_KUMAAddressProvider.getKIBToken(_riskCategory));
         uint256 availableIncome = KIBToken.balanceOf(address(this));
 
-        if (availableIncome > 0) {
+        if (availableIncome > 0 && _payees.length() > 0) {
             _release(KIBToken, availableIncome);
         }
     }

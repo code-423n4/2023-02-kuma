@@ -105,6 +105,16 @@ contract KUMAFeeCollectorTest is BaseSetUp {
         }
     }
 
+    function test_release_WithNoPayees() external {
+        for (uint256 i; i < 4; i++) {
+            _KUMAFeeCollector.removePayee(_payees[i]);
+        }
+        _KIBToken.mint(address(_KUMAFeeCollector), 4 ether);
+        vm.expectEmit(false, false, false, true);
+        _KUMAFeeCollector.addPayee(_payees[0], 100); // if this line emitts anything other than a PayeeAdded event, test will fail
+        emit PayeeAdded(_payees[0], 100); // Technically the actual event passed into the vm.expectEmit call, since the expected event was emitted in the line above
+    }
+
     function test_release_RevertWhen_NoAvailableIncome() public {
         vm.expectRevert(Errors.NO_AVAILABLE_INCOME.selector);
         _KUMAFeeCollector.release();

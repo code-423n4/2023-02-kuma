@@ -205,25 +205,23 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
         uint256 bondFaceValue = _getBondValue(bond.issuance, bond.term, bond.coupon, bond.principal);
         uint256 realizedBondValue = _bondBaseValue[tokenId].rayMul(KIBToken.getUpdatedCumulativeYield()).rayToWad();
 
-        bool requireClone = bondFaceValue > realizedBondValue;
-
-        if (requireClone) {
+        if (bondFaceValue > realizedBondValue) {
+            uint256 previousEpochTimestamp = KIBToken.getPreviousEpochTimestamp();
+            uint256 yield = KIBToken.getYield();
+            _updateMinCoupon();
+            KIBToken.burn(msg.sender, realizedBondValue);
             _cloneBonds[tokenId] = IKBCToken(KUMAAddressProvider.getKBCToken()).issueBond(
                 msg.sender,
                 IKBCToken.CloneBond({
                     parentId: tokenId,
-                    issuance: KIBToken.getPreviousEpochTimestamp(),
-                    coupon: KIBToken.getYield(),
+                    issuance: previousEpochTimestamp,
+                    coupon: yield,
                     principal: realizedBondValue
                 })
             );
-        }
-
-        _updateMinCoupon();
-
-        KIBToken.burn(msg.sender, realizedBondValue);
-
-        if (!requireClone) {
+        } else {
+            _updateMinCoupon();
+            KIBToken.burn(msg.sender, realizedBondValue);
             KUMABondToken.safeTransferFrom(address(this), msg.sender, tokenId);
         }
 

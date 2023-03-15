@@ -22,7 +22,6 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
     using Roles for bytes32;
     using WadRayMath for uint256;
 
-    uint256 public constant MAX_YIELD = 1e29;
     uint256 public constant MAX_EPOCH_LENGTH = 365 days;
     uint256 public constant MIN_YIELD = WadRayMath.RAY;
 
@@ -68,6 +67,9 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         if (epochLength == 0) {
             revert Errors.EPOCH_LENGTH_CANNOT_BE_ZERO();
         }
+        if (epochLength > MAX_EPOCH_LENGTH) {
+            revert Errors.NEW_EPOCH_LENGTH_TOO_HIGH();
+        }
         if (address(KUMAAddressProvider) == address(0)) {
             revert Errors.CANNOT_SET_TO_ADDRESS_ZERO();
         }
@@ -104,7 +106,7 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         if (epochLength > MAX_EPOCH_LENGTH) {
             revert Errors.NEW_EPOCH_LENGTH_TOO_HIGH();
         }
-        if (epochLength > _epochLength) {
+        if (_getPreviousEpochTimestamp() >= (block.timestamp / epochLength * epochLength)) {
             _refreshCumulativeYield();
             _refreshYield();
         }
