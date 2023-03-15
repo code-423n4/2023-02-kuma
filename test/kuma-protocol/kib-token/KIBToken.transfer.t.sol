@@ -27,6 +27,13 @@ contract KIBTokenTransfer is KIBTokenSetUp {
         assertEq(_KIBToken.balanceOf(_alice), 10.5 ether);
     }
 
+    // C4 Critical finding
+    function test_transfer_RevertWhen_TransferringToSelf() external {
+        _KIBToken.mint(address(this), 10 ether);
+        vm.expectRevert(Errors.CANNOT_TRANSFER_TO_SELF.selector);
+        _KIBToken.transfer(address(this), 5 ether);
+    }
+
     function test_transfer_RevertWhen_FromAddressZero() public {
         vm.expectRevert(Errors.ERC20_TRANSFER_FROM_THE_ZERO_ADDRESS.selector);
         vm.prank(address(0));
@@ -54,14 +61,14 @@ contract KIBTokenTransfer is KIBTokenSetUp {
         _KIBToken.transferFrom(address(this), _alice, 5 ether);
     }
 
-    function test_transfer_From_Max_Uint_Approval() public {
+    function test_transferFrom_MaxUintApproval() public {
         _KIBToken.mint(address(this), 10 ether);
         _KIBToken.approve(_alice, type(uint256).max);
         vm.prank(_alice);
         _KIBToken.transferFrom(address(this), _alice, 5 ether);
     }
 
-    function test_transfer_From_Approve_Before_Rewards() public {
+    function test_transferFrom_ApproveBeforeRewards() public {
         _KIBToken.mint(address(this), 10 ether);
         _KIBToken.approve(_alice, 10 ether);
         vm.warp(block.timestamp + 365 days);

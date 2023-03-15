@@ -270,6 +270,9 @@ contract KIBToken is IKIBToken, ERC20PermitUpgradeable, UUPSUpgradeable {
         if (to == address(0)) {
             revert Errors.ERC20_TRANSER_TO_THE_ZERO_ADDRESS();
         }
+        if (to == from) {
+            revert Errors.CANNOT_TRANSFER_TO_SELF();
+        }
         _refreshCumulativeYield();
         _refreshYield();
 
