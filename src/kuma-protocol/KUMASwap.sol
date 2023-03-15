@@ -113,13 +113,12 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
      * @param tokenId Sold bond tokenId.
      */
     function sellBond(uint256 tokenId) external override whenNotPaused whenNotDeprecated {
-        if (_coupons.length() == _maxCoupons) {
-            revert Errors.MAX_COUPONS_REACHED();
-        }
         IKUMAAddressProvider KUMAAddressProvider = _KUMAAddressProvider;
         IKUMABondToken KUMABondToken = IKUMABondToken(KUMAAddressProvider.getKUMABondToken());
         IKUMABondToken.Bond memory bond = KUMABondToken.getBond(tokenId);
-
+        if (!_coupons.contains(bond.coupon) && _coupons.length() == _maxCoupons) {
+            revert Errors.MAX_COUPONS_REACHED();
+        }
         if (bond.riskCategory != _riskCategory) {
             revert Errors.WRONG_RISK_CATEGORY();
         }

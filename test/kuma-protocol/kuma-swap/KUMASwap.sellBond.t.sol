@@ -112,6 +112,21 @@ contract KUMASwapSellBond is KUMASwapSetUp {
         assertEq(_KUMASwap.getBondReserve().length, 2);
     }
 
+    function test_sellBond_WithExistingCouponWhenMaxCouponsReached() external {
+        _KUMASwap.sellBond(1);
+        IKUMABondToken.Bond memory bond_ = _bond;
+
+        for (uint256 i = 2; i <= 365; i++) {
+            bond_.coupon = bond_.coupon + 1;
+            _KUMABondToken.issueBond(address(this), bond_);
+            _KUMASwap.sellBond(i);
+        }
+        IKUMABondToken.Bond memory repeatedCouponBond = _bond;
+        _KUMABondToken.issueBond(address(this), repeatedCouponBond);
+
+        _KUMASwap.sellBond(366);
+    }
+
     /**
      * @notice Tests sellBond function data validation by trying to sell a bond with
      * the wrond risk category.
@@ -161,17 +176,15 @@ contract KUMASwapSellBond is KUMASwapSetUp {
      * @notice Tests sellBond with maxCoupons reached.
      */
     function test_sellBond_RevertWhen_MaxCouponsReached() public {
-        _KUMASwap.sellBond(1);
         IKUMABondToken.Bond memory bond_ = _bond;
-
-        for (uint256 i; i < 364; i++) {
+        for (uint256 i = 1; i <= 365; i++) {
+            _KUMASwap.sellBond(i);
             bond_.coupon = bond_.coupon + 1;
             _KUMABondToken.issueBond(address(this), bond_);
-            _KUMASwap.sellBond(i + 2);
         }
 
         vm.expectRevert(Errors.MAX_COUPONS_REACHED.selector);
-        _KUMASwap.sellBond(365);
+        _KUMASwap.sellBond(366);
     }
 
     /**
