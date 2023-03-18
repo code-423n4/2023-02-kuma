@@ -164,13 +164,12 @@ contract KUMASwapSellBond is KUMASwapSetUp {
      * @notice Tests sellBond with maxCoupons reached.
      */
     function test_sellBond_RevertWhen_MaxCouponsReached() public {
-        _KUMASwap.sellBond(1);
         IKUMABondToken.Bond memory bond_ = _bond;
 
-        for (uint256 i; i <= 360; i++) {
+        for (uint256 i = 1; i <= 360; i++) {
+            _KUMASwap.sellBond(i);
             bond_.coupon = bond_.coupon + 1;
             _KUMABondToken.issueBond(address(this), bond_);
-            _KUMASwap.sellBond(i + 2);
         }
 
         vm.expectRevert(Errors.MAX_COUPONS_REACHED.selector);
