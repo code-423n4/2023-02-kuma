@@ -101,7 +101,7 @@ contract KBCTokenTest is BaseSetUp {
             country: _COUNTRY,
             term: _TERM,
             issuance: uint64(block.timestamp),
-            maturity: uint64(block.timestamp + 365 days * 3),
+            maturity: uint64(block.timestamp + _TERM_SECONDS),
             coupon: _YIELD,
             principal: 10 ether,
             riskCategory: _RISK_CATEGORY
@@ -160,8 +160,11 @@ contract KBCTokenTest is BaseSetUp {
     }
 
     function test_issueBond_WithDifferentRiskCategories() public {
+        _bond.currency = _CURRENCY_;
+        _bond.country = _COUNTRY_;
+        _bond.term = _TERM_;
         _bond.riskCategory = _RISK_CATEGORY_;
-        _bond.maturity = uint64(block.timestamp + _TERM_);
+        _bond.maturity = uint64(block.timestamp + _TERM_SECONDS);
 
         _KUMABondToken.issueBond(address(this), _bond);
 

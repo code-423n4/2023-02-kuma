@@ -32,7 +32,8 @@ abstract contract BaseSetUp is Test {
     bytes16 internal constant _ISIN = bytes16("US0378331005");
     bytes4 internal constant _CURRENCY = "EUR";
     bytes4 internal constant _COUNTRY = "FR";
-    uint64 internal constant _TERM = 365 days * 30;
+    uint64 internal constant _TERM = 12 * 30;
+    uint256 internal constant _TERM_SECONDS = 365 days * 30;
     bytes32 internal constant _RISK_CATEGORY = keccak256(abi.encode(_CURRENCY, _COUNTRY, _TERM));
     uint256 internal constant _YIELD = 1000000001547125957863212449; // % 5 per year
     uint256 internal constant _EPOCH_LENGTH = 4 hours;

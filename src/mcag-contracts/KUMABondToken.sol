@@ -18,6 +18,8 @@ contract KUMABondToken is ERC721, Pausable, IKUMABondToken {
     IAccessControl public immutable override accessController;
     IBlacklist public immutable override blacklist;
 
+    uint256 public constant MAX_TERM = 12 * 30; // The max lifetime of a bond we expect is 30 years
+
     Counters.Counter private _tokenIdCounter;
     string private _uri;
 

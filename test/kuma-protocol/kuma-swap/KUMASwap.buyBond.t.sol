@@ -200,7 +200,7 @@ contract KUMASwapBuyBond is KUMASwapSetUp {
         bond_.maturity = bond_.maturity + 365 days;
         _KUMABondToken.issueBond(address(this), bond_);
         _KUMASwap.sellBond(2);
-        skip(_TERM);
+        skip(_TERM_SECONDS);
         _KUMASwap.expireBond(1);
         assertTrue(_KUMASwap.isExpired());
         _KUMASwap.buyBond(1);
@@ -239,7 +239,7 @@ contract KUMASwapBuyBond is KUMASwapSetUp {
         bond_.maturity = bond_.maturity + 365 days;
         _KUMABondToken.issueBond(address(this), bond_);
         _KUMASwap.sellBond(2);
-        skip(_TERM);
+        skip(_TERM_SECONDS);
         _KUMASwap.expireBond(1);
         vm.expectRevert(Errors.EXPIRED_BONDS_MUST_BE_BOUGHT_FIRST.selector);
         _KUMASwap.buyBond(2);
@@ -250,7 +250,7 @@ contract KUMASwapBuyBond is KUMASwapSetUp {
      */
     function test_buyBond_AfterMaturity() public {
         _KUMASwap.sellBond(1);
-        skip(_TERM + 365 days);
+        skip(_TERM_SECONDS + 365 days);
 
         uint256 realizedBondValue = _KIBToken.balanceOf(address(this));
         uint256 bondFaceValue = _bond.coupon.rayPow(_TERM).rayMul(_bond.principal);
@@ -269,10 +269,10 @@ contract KUMASwapBuyBond is KUMASwapSetUp {
      */
     function test_buyBond_AfterMaturityImpactOnOtherBonds() public {
         _KUMASwap.sellBond(1);
-        skip(_TERM / 2);
+        skip(_TERM_SECONDS / 2);
         _KUMABondToken.issueBond(address(this), _bond);
         _KUMASwap.sellBond(2);
-        skip(_TERM / 2 + 365 days);
+        skip(_TERM_SECONDS / 2 + 365 days);
         _KUMASwap.buyBond(1);
 
         uint256 realizedBondValue = _KIBToken.balanceOf(address(this));
