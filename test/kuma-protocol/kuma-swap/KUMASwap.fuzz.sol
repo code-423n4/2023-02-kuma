@@ -65,8 +65,8 @@ contract KUMASwapFuzzTest is BaseSetUp {
 
         uint256 elapsedTime = _KIBToken.getPreviousEpochTimestamp() - bond_.issuance;
 
-        if (elapsedTime > _TERM) {
-            elapsedTime = _TERM;
+        if (elapsedTime > _TERM_SECONDS) {
+            elapsedTime = _TERM_SECONDS;
         }
 
         uint256 expectedKIBTBalance = coupon.rayPow(elapsedTime).rayMul(bond_.principal);
@@ -108,12 +108,11 @@ contract KUMASwapFuzzTest is BaseSetUp {
 
         _KUMASwap.buyBond(2);
 
-        uint256 bondFaceValue = _getBondValue(bond_.issuance, bond_.term, coupon, principal);
+        uint256 bondFaceValue = _getBondValue(bond_.issuance, bond_.maturity - _bond.issuance, coupon, principal);
         uint256 realizedBondValue = baseBondValue.rayMul(_KIBToken.getUpdatedCumulativeYield()).rayToWad();
-        uint256 bondPurchaseValue = bondFaceValue > realizedBondValue ? realizedBondValue : bondFaceValue;
 
         uint256 expectedYield = _bond.coupon < oracleRate ? _bond.coupon : oracleRate;
-        uint256 expectedBalance = balanceBefore - bondPurchaseValue;
+        uint256 expectedBalance = balanceBefore - realizedBondValue;
 
         assertEq(_KIBToken.getYield(), expectedYield);
         assertEq(_KIBToken.balanceOf(_alice), expectedBalance);

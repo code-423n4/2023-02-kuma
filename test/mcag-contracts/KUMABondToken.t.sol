@@ -25,7 +25,7 @@ contract KUMABondTokenTest is Test {
     bytes16 public constant ISIN = bytes16("US0378331005");
     bytes4 public constant CURRENCY = bytes4("USD");
     bytes4 public constant COUNTRY = bytes4("US");
-    uint64 public constant TERM = 365 days;
+    uint64 public constant TERM = 12;
 
     KUMABondToken private _kumaBondToken;
     AccessController private _accessController;
@@ -99,7 +99,7 @@ contract KUMABondTokenTest is Test {
         assertEq(_kumaBondToken.getTokenIdCounter(), 1);
         assertEq(newBond.currency, bytes4("USD"));
         assertEq(newBond.country, bytes4("US"));
-        assertEq(newBond.term, uint64(365 days));
+        assertEq(newBond.term, TERM);
         assertEq(newBond.issuance, uint64(block.timestamp));
         assertEq(newBond.maturity, uint64(block.timestamp + 365 days));
         assertEq(newBond.coupon, 1000000001547125957863212449);

@@ -33,7 +33,7 @@ abstract contract KUMASwapSetUp is BaseSetUp {
             country: _COUNTRY,
             term: _TERM,
             issuance: uint64(block.timestamp),
-            maturity: uint64(block.timestamp + _TERM),
+            maturity: uint64(block.timestamp + _TERM_SECONDS),
             coupon: _YIELD,
             principal: 10 ether,
             riskCategory: _RISK_CATEGORY

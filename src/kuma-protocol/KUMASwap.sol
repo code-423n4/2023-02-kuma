@@ -97,7 +97,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
             revert Errors.WRONG_RISK_CATEGORY();
         }
         _KUMAAddressProvider = KUMAAddressProvider;
-        _maxCoupons = uint16(term / 30 days);
+        _maxCoupons = uint16(term);
         _riskCategory = keccak256(abi.encode(currency, country, term));
         _minCoupon = MIN_ALLOWED_COUPON;
         _deprecationStableCoin = deprecationStableCoin;
@@ -150,7 +150,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
         _couponInventory[bond.coupon]++;
         _bondReserve.add(tokenId);
 
-        uint256 bondValue = _getBondValue(bond.issuance, bond.term, bond.coupon, bond.principal);
+        uint256 bondValue = _getBondValue(bond.issuance, bond.maturity - bond.issuance, bond.coupon, bond.principal);
 
         _bondBaseValue[tokenId] = bondValue.wadToRay().rayDiv(KIBToken.getUpdatedCumulativeYield());
 
@@ -202,7 +202,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
 
         IKIBToken KIBToken = IKIBToken(KUMAAddressProvider.getKIBToken(_riskCategory));
 
-        uint256 bondFaceValue = _getBondValue(bond.issuance, bond.term, bond.coupon, bond.principal);
+        uint256 bondFaceValue = _getBondValue(bond.issuance, bond.maturity - bond.issuance, bond.coupon, bond.principal);
         uint256 realizedBondValue = _bondBaseValue[tokenId].rayMul(KIBToken.getUpdatedCumulativeYield()).rayToWad();
 
         bool requireClone = bondFaceValue > realizedBondValue;
@@ -572,7 +572,7 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
     /**
      * @return bondValue Bond principal value + accrued interests.
      */
-    function _getBondValue(uint256 issuance, uint256 term, uint256 coupon, uint256 principal)
+    function _getBondValue(uint256 issuance, uint256 maxBondDuration, uint256 coupon, uint256 principal)
         private
         view
         returns (uint256)
@@ -586,8 +586,8 @@ contract KUMASwap is IKUMASwap, PausableUpgradeable, UUPSUpgradeable {
 
         uint256 elapsedTime = previousEpochTimestamp - issuance;
 
-        if (elapsedTime > term) {
-            elapsedTime = term;
+        if (elapsedTime > maxBondDuration) {
+            elapsedTime = maxBondDuration;
         }
 
         return coupon.rayPow(elapsedTime).rayMul(principal);

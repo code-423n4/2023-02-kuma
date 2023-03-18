@@ -10,7 +10,7 @@ contract KUMASwapSetters is KUMASwapSetUp {
         assertEq(address(_KUMASwap.getKUMAAddressProvider()), address(_KUMAAddressProvider));
         assertEq(address(_KUMASwap.getDeprecationStableCoin()), address(_deprecationStableCoin));
         assertEq(_KUMASwap.getRiskCategory(), _RISK_CATEGORY);
-        assertEq(_KUMASwap.getMaxCoupons(), 365);
+        assertEq(_KUMASwap.getMaxCoupons(), 360);
 
         KUMASwap newKUMASwap = new KUMASwap();
 
