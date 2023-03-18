@@ -167,7 +167,7 @@ contract KUMASwapSellBond is KUMASwapSetUp {
         _KUMASwap.sellBond(1);
         IKUMABondToken.Bond memory bond_ = _bond;
 
-        for (uint256 i; i < 360; i++) {
+        for (uint256 i; i <= 360; i++) {
             bond_.coupon = bond_.coupon + 1;
             _KUMABondToken.issueBond(address(this), bond_);
             _KUMASwap.sellBond(i + 2);
